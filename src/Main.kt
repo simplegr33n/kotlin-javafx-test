@@ -1,5 +1,4 @@
-package sample
-
+import game_manager.command_handler.CommandHandler
 import javafx.application.Application
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -10,6 +9,9 @@ import javafx.scene.control.Button
 import javafx.stage.Stage
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField
+import javafx.collections.ListChangeListener
+
+
 
 lateinit var window: Stage
 
@@ -17,21 +19,29 @@ lateinit var logListView: ListView<String>
 lateinit var enterTextField: TextField
 lateinit var enterButton: Button
 
+var awaitingInput = null
 
-public class Main : Application() {
+
+class Main : Application() {
     override fun start(primaryStage: Stage) {
         val root: Parent = FXMLLoader.load(javaClass.getResource("main.fxml"))
         window = primaryStage
-        window.title = "Hello World"
+        window.title = "Nature Versus Origin"
         window.scene = Scene(root, 800.0, 600.0)
 
-        // LISTVIEW
+        setUserAgentStylesheet(STYLESHEET_CASPIAN)
+
+        // LIST VIEW
         logListView = window.scene.lookup("#log_listview") as ListView<String>
-        val textList: ObservableList<String> = FXCollections.observableArrayList("Cool", "Dot", "Com")
+        logListView.isMouseTransparent = true
+        logListView.isFocusTraversable = false
+        val textList: ObservableList<String> = FXCollections.observableArrayList("Welcome to Nature Versus Origin!", "The first text you enter will become your name, so choose wisely...")
         logListView.items.addAll(textList)
 
+        logListView.items.addListener(ListChangeListener<Any> { c -> logListView.scrollTo(c.list.size - 1) })
 
-        // TEXTFIELD
+
+        // TEXT FIELD
         enterTextField = window.scene.lookup("#input_textfield") as TextField
         enterTextField.setOnAction { enterPressed(enterTextField.text) }
 
@@ -53,6 +63,15 @@ public class Main : Application() {
 
 
 fun enterPressed(msg: String) {
-    logListView.items.add(msg)
+    if (msg.isEmpty()) {
+        return
+    }
+    println(msg.length)
+    if (awaitingInput != null) {
+
+    } else {
+        CommandHandler().handleUserCommand(msg)
+    }
+
     enterTextField.clear()
 }
