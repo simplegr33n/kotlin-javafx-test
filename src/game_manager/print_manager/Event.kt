@@ -1,10 +1,9 @@
-package quest_chains
+package game_manager.print_manager
 
-import java.util.concurrent.locks.Condition
+abstract class Event {
+    abstract var childEvents: ArrayList<Event>
 
-abstract class Quest {
-    abstract var childQuests: ArrayList<Quest>
-    abstract fun conditionalInit(): Boolean
+    abstract fun initConditions(): Boolean
 
     abstract fun offerString(): String
     abstract fun explainString(): String
